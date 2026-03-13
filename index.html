@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מזג האוויר - WeatherApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            transition: background-color 0.5s ease;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .weather-card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        .temp-gradient {
+            background: linear-gradient(to top, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen overflow-x-hidden">
+
+    <!-- Background Decoration -->
+    <div class="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- Header & Search -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6 animate-fade-in">
+            <div>
+                <h1 class="text-4xl font-bold tracking-tight">מזג <span class="text-blue-400">אוויר</span></h1>
+                <p class="text-slate-400 text-sm mt-1" id="current-date"></p>
+            </div>
+            
+            <div class="relative w-full md:w-96">
+                <input type="text" id="city-input" placeholder="חפש עיר (למשל: ירושלים, תל אביב...)" 
+                    class="w-full bg-slate-900/50 border border-slate-700 text-white px-6 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-lg glass"
+                >
+                <button onclick="searchCity()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-500 p-2 rounded-xl transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Grid -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Left: Current Weather Main -->
+            <div class="lg:col-span-2 space-y-8">
+                <div class="glass p-10 rounded-[2.5rem] relative overflow-hidden animate-fade-in shadow-2xl">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center relative z-10">
+                        <div>
+                            <h2 id="display-city" class="text-5xl font-bold mb-2">תל אביב</h2>
+                            <p id="weather-desc" class="text-xl text-slate-300">שמיים בהירים</p>
+                            <div class="mt-8 flex items-end">
+                                <span id="display-temp" class="text-8xl font-bold temp-gradient">24°</span>
+                                <span class="text-2xl text-slate-400 mb-4 mr-2">צלזיוס</span>
+                            </div>
+                        </div>
+                        <div class="mt-8 md:mt-0" id="weather-icon-large">
+                            <!-- Icon will be inserted here -->
+                            <svg class="w-48 h-48 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 15a5 5 0 100-10 5 5 0 000 10zM1.5 10a.5.5 0 01.5-.5h2a.5.5 0 010 1H2a.5.5 0 01-.5-.5zM10 1.5a.5.5 0 01.5.5v2a.5.5 0 01-1 0V2a.5.5 0 01.5-.5zM16.5 10a.5.5 0 01.5-.5h2a.5.5 0 010 1h-2a.5.5 0 01-.5-.5zM10 16.5a.5.5 0 01.5.5v2a.5.5 0 01-1 0v-2a.5.5 0 01.5-.5zM3.536 3.536a.5.5 0 01.707 0l1.414 1.414a.5.5 0 11-.707.707L3.536 4.243a.5.5 0 010-.707zm12.929 12.929a.5.5 0 01.707 0l1.414 1.414a.5.5 0 01-.707.707l-1.414-1.414a.5.5 0 010-.707zM3.536 16.464a.5.5 0 010-.707l1.414-1.414a.5.5 0 11.707.707l-1.414 1.414a.5.5 0 01-.707 0zm12.929-12.929a.5.5 0 010-.707l1.414 1.414a.5.5 0 11-.707.707l-1.414-1.414a.5.5 0 010-.707z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Details Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="glass p-6 rounded-3xl text-center weather-card">
+                        <p class="text-slate-400 text-sm mb-2">לחות</p>
+                        <p id="humidity" class="text-2xl font-bold">45%</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center weather-card">
+                        <p class="text-slate-400 text-sm mb-2">רוח</p>
+                        <p id="wind" class="text-2xl font-bold">12 קמ"ש</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center weather-card">
+                        <p class="text-slate-400 text-sm mb-2">מרגיש כמו</p>
+                        <p id="feels-like" class="text-2xl font-bold">26°</p>
+                    </div>
+                    <div class="glass p-6 rounded-3xl text-center weather-card">
+                        <p class="text-slate-400 text-sm mb-2">ראות</p>
+                        <p id="visibility" class="text-2xl font-bold">10 ק"מ</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: 5-Day Forecast -->
+            <div class="lg:col-span-1 space-y-4 animate-fade-in" style="animation-delay: 0.4s">
+                <h3 class="text-xl font-bold px-2">תחזית לימים הקרובים</h3>
+                <div class="space-y-3" id="forecast-container">
+                    <!-- Forecast items will be injected here -->
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="mt-16 text-center text-slate-500 text-sm pb-8">
+            <p>© 2024 כל הזכויות שמורות - אפליקציית מזג האוויר המודרנית</p>
+        </footer>
+    </div>
+
+    <script>
+        // Mock Data for Demo
+        const weatherData = {
+            'ירושלים': { temp: 21, desc: 'מעונן חלקית', humidity: 40, wind: 15, feels: 22, vis: 10, forecast: [20, 19, 22, 25, 24] },
+            'תל אביב': { temp: 24, desc: 'שמיים בהירים', humidity: 65, wind: 10, feels: 26, vis: 10, forecast: [25, 26, 27, 26, 25] },
+            'חיפה': { temp: 22, desc: 'נאה', humidity: 55, wind: 18, feels: 23, vis: 8, forecast: [22, 23, 24, 23, 22] },
+            'אילת': { temp: 32, desc: 'חם מאוד', humidity: 15, wind: 5, feels: 34, vis: 15, forecast: [33, 35, 36, 35, 34] }
+        };
+
+        const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+        
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').innerText = now.toLocaleDateString('he-IL', options);
+        }
+
+        function generateForecast(baseTemp) {
+            const container = document.getElementById('forecast-container');
+            container.innerHTML = '';
+            
+            const tomorrow = new Date();
+            for(let i = 1; i <= 5; i++) {
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const dayName = days[tomorrow.getDay()];
+                const dailyTemp = baseTemp + Math.floor(Math.random() * 5) - 2;
+                
+                const item = document.createElement('div');
+                item.className = 'glass p-4 rounded-2xl flex justify-between items-center weather-card';
+                item.innerHTML = `
+                    <span class="font-bold w-16">${dayName}</span>
+                    <div class="flex items-center gap-3">
+                        <svg class="w-8 h-8 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1.323l.395.072 1.49.271A7.5 7.5 0 0117.5 11.5a7.5 7.5 0 11-15 0 7.5 7.5 0 015.615-7.334l1.49-.271.395-.072V3a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                        <span class="text-slate-400 text-sm">מעונן חלקית</span>
+                    </div>
+                    <span class="text-xl font-bold">${dailyTemp}°</span>
+                `;
+                container.appendChild(item);
+            }
+        }
+
+        function searchCity() {
+            const input = document.getElementById('city-input').value.trim();
+            if (!input) return;
+
+            // Simple loading effect
+            const main = document.querySelector('main');
+            main.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                const data = weatherData[input] || { 
+                    temp: Math.floor(Math.random() * 15) + 15, 
+                    desc: 'שמיים בהירים', 
+                    humidity: 50, 
+                    wind: 12, 
+                    feels: 20, 
+                    vis: 10 
+                };
+
+                document.getElementById('display-city').innerText = input;
+                document.getElementById('display-temp').innerText = `${data.temp}°`;
+                document.getElementById('weather-desc').innerText = data.desc;
+                document.getElementById('humidity').innerText = `${data.humidity}%`;
+                document.getElementById('wind').innerText = `${data.wind} קמ"ש`;
+                document.getElementById('feels-like').innerText = `${data.feels}°`;
+                document.getElementById('visibility').innerText = `${data.vis} ק"מ`;
+
+                generateForecast(data.temp);
+                main.style.opacity = '1';
+                
+                // Color shift based on temp
+                if (data.temp > 28) {
+                    document.body.className = "bg-orange-950 text-white min-h-screen overflow-x-hidden";
+                } else if (data.temp < 15) {
+                    document.body.className = "bg-cyan-950 text-white min-h-screen overflow-x-hidden";
+                } else {
+                    document.body.className = "bg-slate-950 text-white min-h-screen overflow-x-hidden";
+                }
+            }, 400);
+        }
+
+        // Initialize
+        updateDate();
+        generateForecast(24);
+
+        // Enter key support
+        document.getElementById('city-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchCity();
+            }
+        });
+    </script>
+</body>
+</html>
